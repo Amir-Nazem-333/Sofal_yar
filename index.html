@@ -16,6 +16,7 @@
 }
 [data-theme="dark"]{ --sand:#221913; --sand-2:#2B211A; --paper:#1C1510; --ink:#F1E6D8; --line:#3D2F24; --shadow: 0 6px 24px -8px rgba(0,0,0,.5); }
 *{box-sizing:border-box;}
+html{overflow-x:hidden;}
 html,body{margin:0;padding:0;height:100%;}
 body{font-family:'Vazirmatn',sans-serif;
   background:radial-gradient(1200px 600px at 100% -10%, var(--clay-light) 0%, transparent 40%), var(--sand);
@@ -64,8 +65,8 @@ tbody tr{border-top:1px solid var(--line);} tbody tr:hover{background:var(--sand
 .badge.red{background:rgba(178,59,52,.15); color:var(--danger);} .badge.gray{background:var(--sand-2); color:var(--ink); opacity:.7;}
 .overlay{position:fixed; inset:0; background:rgba(20,14,10,.55); display:none; align-items:flex-start; justify-content:center; z-index:50; padding:30px 20px; overflow-y:auto;}
 .overlay.open{display:flex;}
-.modal{background:var(--paper); border-radius:16px; width:100%; max-width:620px; padding:22px; box-shadow:0 20px 60px -10px rgba(0,0,0,.4); margin-bottom:40px;}
-.modal.wide{max-width:780px;}
+.modal{background:var(--paper); border-radius:16px; width:100%; max-width:min(620px, calc(100vw - 24px)); padding:22px; box-shadow:0 20px 60px -10px rgba(0,0,0,.4); margin-bottom:40px;}
+.modal.wide{max-width:min(780px, calc(100vw - 24px));}
 .modal h3{margin:0 0 16px; font-size:17px; display:flex; justify-content:space-between; align-items:center;}
 .field{margin-bottom:12px;} .field label{display:block; font-size:12px; margin-bottom:5px; opacity:.7; font-weight:600;}
 .field input, .field select, .field textarea{width:100%; padding:9px 11px; border-radius:9px; border:1px solid var(--line);
@@ -73,7 +74,7 @@ tbody tr{border-top:1px solid var(--line);} tbody tr:hover{background:var(--sand
 .field textarea{resize:vertical; min-height:60px;}
 .modal-actions{display:flex; gap:8px; justify-content:flex-start; margin-top:18px; padding-top:14px; border-top:1px solid var(--line);}
 .section-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;}
-.search-box input{padding:9px 14px; border-radius:10px; border:1px solid var(--line); background:var(--paper); font-family:inherit; font-size:13px; width:220px;}
+.search-box input{padding:9px 14px; border-radius:10px; border:1px solid var(--line); background:var(--paper); font-family:inherit; font-size:13px; width:220px; max-width:100%;}
 .empty{text-align:center; padding:50px 20px; opacity:.5; font-size:13px;}
 .view{display:none;} .view.active{display:block;}
 .toast-wrap{position:fixed; bottom:20px; left:20px; z-index:100; display:flex; flex-direction:column; gap:8px;}
@@ -101,12 +102,78 @@ tbody tr{border-top:1px solid var(--line);} tbody tr:hover{background:var(--sand
 .select-dropdown .opt:hover{background:var(--sand-2);}
 .select-dropdown .opt.muted{opacity:.5; cursor:default;}
 @media print{.sidebar,.topbar,.toolbar,.no-print{display:none !important;} body{background:#fff !important;} .main{max-width:none;padding:0;}}
+
+/* ============ RESPONSIVE ============ */
+/* Tablet / small laptop: tighten paddings, keep sidebar vertical but narrower */
+@media(max-width:1024px){
+  .sidebar{width:210px; padding:18px 12px;}
+  .main{padding:20px;}
+  .modal-actions{flex-wrap:wrap;}
+}
+
+/* Below this, the vertical sidebar becomes a horizontal, scrollable top bar */
+@media(max-width:860px){
+  body{flex-direction:column;}
+  .sidebar{
+    width:100%; height:auto; max-height:none; position:sticky; top:0; z-index:40;
+    flex-direction:row; align-items:center; overflow-x:auto; overflow-y:visible;
+    padding:10px 12px; gap:4px; white-space:nowrap; -webkit-overflow-scrolling:touch;
+  }
+  .brand{display:flex; padding:0 10px 0 0; margin:0; border-bottom:none; flex-shrink:0;}
+  .brand .mark{width:32px;height:32px;font-size:15px;}
+  .brand span{display:none;}
+  .brand b{font-size:14px;}
+  .nav-sec{display:none;}
+  .nav-item{flex:0 0 auto; padding:8px 12px; font-size:12.5px;}
+  .main{padding:16px; max-width:100%;}
+  .topbar{margin-bottom:16px;}
+  .g5{grid-template-columns:repeat(3,1fr);}
+}
+
+/* Phones (incl. iPhone SE/13/14/15 widths ~375-430px) */
+@media(max-width:640px){
+  .main{padding:12px;}
+  .topbar{flex-direction:column; align-items:flex-start; gap:10px;}
+  .topbar h1{font-size:17px;}
+  .topbar .sub{font-size:11.5px;}
+  .toolbar{width:100%; justify-content:flex-start;}
+  .backup-pill{font-size:10.5px; padding:5px 9px; max-width:100%;}
+  .backup-pill span{overflow:hidden; text-overflow:ellipsis;}
+  .theme-toggle{font-size:12px; padding:6px 9px;}
+  .g2,.g3{grid-template-columns:1fr;}
+  .g4,.g5{grid-template-columns:repeat(2,1fr);}
+  .card{padding:14px;}
+  .stat-card .value{font-size:19px;}
+  .section-head{flex-direction:column; align-items:stretch;}
+  .section-head .toolbar{flex-wrap:wrap;}
+  .search-box, .search-box input{width:100%;}
+  table{font-size:12px;}
+  th,td{padding:8px 9px;}
+  .modal{padding:16px;}
+  .modal h3{font-size:15px; flex-wrap:wrap; gap:6px;}
+  .overlay{padding:14px 8px;}
+  .item-row{grid-template-columns:1fr 1fr; gap:8px;}
+  .item-row > div:nth-child(1){grid-column:1/-1;}
+  .item-row > div:nth-child(4){grid-column:1/-1; display:flex; justify-content:flex-end;}
+  .modal-actions{gap:6px;}
+  .modal-actions .btn{flex:1 1 auto; justify-content:center;}
+  .modal-actions .btn[style*="margin-right:auto"]{flex:1 1 100%; order:10;}
+  #ordersYearFilter{width:100% !important;}
+  .toolbar select, .toolbar input{max-width:100%;}
+}
+
+/* Very narrow phones */
+@media(max-width:380px){
+  .nav-item{font-size:11.5px; padding:7px 9px;}
+  .stat-card .value{font-size:16px;}
+  .btn{padding:8px 12px; font-size:12.5px;}
+}
 </style>
 </head>
 <body data-theme="light">
 
 <aside class="sidebar">
-  <div class="brand"><div class="mark">آ</div><div><b>سفال‌یار</b><span> طراحی و توسعه امیرحسین ناظم</span></div></div>
+  <div class="brand"><div class="mark">آ</div><div><b>سفال‌یار</b><span>ERP کارخانه آجر و سفال</span></div></div>
   <div class="nav-item active" data-view="dashboard" data-roles="all"><span class="nav-icon">▦</span> داشبورد مدیریتی</div>
   <div class="nav-sec">فروش و مشتریان</div>
   <div class="nav-item" data-view="customers" data-roles="مدیر کل,مدیر فروش,کارشناس فروش,پشتیبانی"><span class="nav-icon">◔</span> مشتریان</div>
@@ -166,8 +233,24 @@ tbody tr{border-top:1px solid var(--line);} tbody tr:hover{background:var(--sand
 
   <div class="view" id="view-orders">
     <div class="section-head">
-      <div class="search-box"><input placeholder="جستجوی سفارش..." oninput="renderTable('orders', this.value)"></div>
+      <div class="search-box"><input id="ordersSearch" placeholder="جستجوی شماره/توضیحات..." oninput="renderOrdersTable()"></div>
       <button class="btn btn-primary" onclick="openOrderModal()">+ سفارش جدید</button>
+    </div>
+    <div class="section-head" style="margin-top:-8px;">
+      <div class="toolbar">
+        <select id="ordersCustomerFilter" onchange="renderOrdersTable()" style="min-width:160px;">
+          <option value="">همه مشتریان</option>
+        </select>
+        <select id="ordersMonthFilter" onchange="renderOrdersTable()">
+          <option value="">همه ماه‌ها</option>
+          <option value="01">فروردین</option><option value="02">اردیبهشت</option><option value="03">خرداد</option>
+          <option value="04">تیر</option><option value="05">مرداد</option><option value="06">شهریور</option>
+          <option value="07">مهر</option><option value="08">آبان</option><option value="09">آذر</option>
+          <option value="10">دی</option><option value="11">بهمن</option><option value="12">اسفند</option>
+        </select>
+        <input id="ordersYearFilter" placeholder="سال شمسی (مثلاً ۱۴۰۵)" style="width:150px; padding:9px 12px; border-radius:10px; border:1px solid var(--line); background:var(--paper); font-family:inherit; font-size:13px;" oninput="renderOrdersTable()">
+        <button class="btn btn-ghost btn-sm" onclick="clearOrderFilters()">پاک کردن فیلترها</button>
+      </div>
     </div>
     <div class="table-wrap"><table><thead><tr><th>شماره</th><th>مشتری</th><th>مبلغ کل</th><th>وضعیت سفارش</th><th>وضعیت پرداخت</th><th>راننده</th><th>تاریخ</th><th></th></tr></thead><tbody id="tbody-orders"></tbody></table></div>
   </div>
@@ -193,7 +276,7 @@ tbody tr{border-top:1px solid var(--line);} tbody tr:hover{background:var(--sand
       <div class="search-box"><input placeholder="جستجو..." oninput="renderTable('fleet', this.value)"></div>
       <button class="btn btn-primary" onclick="openFleetModal()">+ ثبت ماشین/راننده</button>
     </div>
-    <div class="table-wrap"><table><thead><tr><th>راننده</th><th>کد ملی</th><th>ماشین</th><th>پلاک</th><th>شماره هوشمند</th><th>ظرفیت (تن)</th><th>وضعیت</th><th></th></tr></thead><tbody id="tbody-fleet"></tbody></table></div>
+    <div class="table-wrap"><table><thead><tr><th>راننده</th><th>تلفن</th><th>کد ملی</th><th>ماشین</th><th>پلاک</th><th>شماره هوشمند</th><th>ظرفیت (تن)</th><th>وضعیت</th><th></th></tr></thead><tbody id="tbody-fleet"></tbody></table></div>
   </div>
 
   <div class="view" id="view-users">
@@ -264,7 +347,83 @@ function saveState(skipBackup){ localStorage.setItem(STORE_KEY, JSON.stringify(s
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.getElementById('toastWrap').appendChild(t); setTimeout(()=>t.remove(),3200); }
 function fmt(n){ return Number(n||0).toLocaleString('fa-IR'); }
-function todayStr(){ return new Date().toISOString().slice(0,10); }
+function todayStr(){ return new Date().toISOString().slice(0,10); } // Gregorian ISO — used only for backup filenames
+
+/* ---- Jalali (Shamsi) calendar conversion — pure JS, no external library ---- */
+function jDiv(a,b){ return ~~(a/b); }
+function jMod(a,b){ return a - ~~(a/b)*b; }
+function jalCal(jy){
+  const breaks=[-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178];
+  const bl=breaks.length; let gy=jy+621, leapJ=-14, jp=breaks[0], jm, jump=0;
+  for(let i=1;i<bl;i++){ jm=breaks[i]; jump=jm-jp; if(jy<jm) break; leapJ+=jDiv(jump,33)*8+jDiv(jMod(jump,33),4); jp=jm; }
+  let n=jy-jp;
+  leapJ+=jDiv(n,33)*8+jDiv(jMod(n,33)+3,4);
+  if(jMod(jump,33)===4 && jump-n===4) leapJ+=1;
+  const leapG=jDiv(gy,4)-jDiv((jDiv(gy,100)+1)*3,4)-150;
+  const march=20+leapJ-leapG;
+  if(jump-n<6) n=n-jump+jDiv(jump,33)*33;
+  let leap=jMod(jMod(n+1,33)-1,4);
+  if(leap===-1) leap=4;
+  return {leap, gy, march};
+}
+function g2d(gy,gm,gd){
+  let d=jDiv((gy+jDiv(gm-8,6)+100100)*1461,4)+jDiv(153*jMod(gm+9,12)+2,5)+gd-34840408;
+  d=d-jDiv(jDiv(gy+100100+jDiv(gm-8,6),100)*3,4)+752;
+  return d;
+}
+function d2g(jdn){
+  let j=4*jdn+139361631;
+  j=j+jDiv(jDiv(4*jdn+183187720,146097)*3,4)*4-3908;
+  const i=jDiv(jMod(j,1461),4)*5+308;
+  const gd=jDiv(jMod(i,153),5)+1;
+  const gm=jMod(jDiv(i,153),12)+1;
+  const gy=jDiv(j,1461)-100100+jDiv(8-gm,6);
+  return {gy,gm,gd};
+}
+function d2j(jdn){
+  const gy=d2g(jdn).gy; let jy=gy-621; const r=jalCal(jy); const jdn1f=g2d(gy,3,r.march);
+  let jd, jm, k=jdn-jdn1f;
+  if(k>=0){
+    if(k<=185){ jm=1+jDiv(k,31); jd=jMod(k,31)+1; return {jy,jm,jd}; }
+    k-=186;
+  } else { jy-=1; k+=179; if(r.leap===1) k+=1; }
+  jm=7+jDiv(k,30); jd=jMod(k,30)+1;
+  return {jy,jm,jd};
+}
+function j2d(jy,jm,jd){
+  const r=jalCal(jy);
+  return g2d(r.gy,3,r.march)+(jm-1)*31-jDiv(jm,7)*(jm-7)+jd-1;
+}
+function toJalali(gy,gm,gd){ const j=d2j(g2d(gy,gm,gd)); return [j.jy,j.jm,j.jd]; }
+function toGregorian(jy,jm,jd){ const g=d2g(j2d(jy,jm,jd)); return [g.gy,g.gm,g.gd]; }
+function pad2(n){ return String(n).padStart(2,'0'); }
+function gregorianToJalaliStr(y,m,d){
+  try{ const [jy,jm,jd]=toJalali(y,m,d); return `${jy}/${pad2(jm)}/${pad2(jd)}`; }
+  catch(e){ return `${y}-${pad2(m)}-${pad2(d)}`; }
+}
+function jalaliToday(){ const d=new Date(); return gregorianToJalaliStr(d.getFullYear(), d.getMonth()+1, d.getDate()); }
+const JALALI_MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+function parseJalaliParts(dateStr){
+  const m = /^(\d{3,4})\/(\d{1,2})\/(\d{1,2})$/.exec((dateStr||'').trim());
+  if(!m) return null;
+  return {jy:Number(m[1]), jm:Number(m[2]), jd:Number(m[3])};
+}
+function parseJalaliNum(dateStr){
+  const p = parseJalaliParts(dateStr);
+  return p ? p.jy*10000 + p.jm*100 + p.jd : 0;
+}
+function jalaliSearchBlob(dateStr){
+  const p = parseJalaliParts(dateStr);
+  if(!p) return dateStr||'';
+  return `${dateStr} ${p.jd} ${JALALI_MONTHS[p.jm-1]||''} ${p.jy}`;
+}
+/* Best-effort: if the text looks like a Gregorian ISO date (old records), show it converted to Jalali for display; otherwise show as typed (manual entry fallback). */
+function displayDate(raw){
+  if(!raw) return '';
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw.trim());
+  if(m) return gregorianToJalaliStr(Number(m[1]), Number(m[2]), Number(m[3]));
+  return raw;
+}
 
 /* ================= NAV ================= */
 const titles = {
@@ -392,7 +551,7 @@ function openOrderModal(id=null){
     <h3>${id?'ویرایش سفارش':'سفارش جدید'}</h3>
     <div class="grid g2">
       <div class="field"><label>شماره سفارش *</label><input id="o_number" value="${item?item.number:'ORD-'+ (1000+state.orders.length+1)}"></div>
-      <div class="field"><label>تاریخ *</label><input id="o_date" value="${item?item.date:todayStr()}"></div>
+      <div class="field"><label>تاریخ (شمسی) *</label><div style="display:flex; gap:6px;"><input id="o_date" value="${item?item.date:jalaliToday()}" placeholder="مثلاً ۱۴۰۵/۰۴/۲۱" style="flex:1;"><button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('o_date').value=jalaliToday()">امروز</button></div></div>
     </div>
     <div class="field">
       <label>مشتری * &nbsp; <span class="linktxt" onclick="quickAddCustomerFromOrder()">+ مشتری جدید</span></label>
@@ -465,9 +624,9 @@ function selectCustomerOption(id){
 function filterDriverOptions(q){
   const dd = document.getElementById('driverDropdown');
   const query = (q||'').toLowerCase();
-  const matches = state.fleet.filter(f=>(f.driver+' '+f.plate).toLowerCase().includes(query));
+  const matches = state.fleet.filter(f=>(f.driver+' '+f.plate+' '+(f.phone||'')).toLowerCase().includes(query));
   dd.innerHTML = matches.length
-    ? matches.map(f=>`<div class="opt" onmousedown="selectDriverOption('${f.id}')">${f.driver} — ${f.plate} (${f.vehicle||'—'})</div>`).join('')
+    ? matches.map(f=>`<div class="opt" onmousedown="selectDriverOption('${f.id}')">${f.driver} — ${f.plate} (${f.vehicle||'—'})${f.phone?' — '+f.phone:''}</div>`).join('')
     : `<div class="opt muted">راننده‌ای ثبت نشده — از «+ راننده جدید» استفاده کنید</div>`;
   dd.classList.add('open');
 }
@@ -510,6 +669,7 @@ function quickAddDriverFromOrder(){
   box.innerHTML = `
     <div class="grid g2">
       <div class="field"><label>نام راننده *</label><input id="qd_driver"></div>
+      <div class="field"><label>شماره تلفن راننده *</label><input id="qd_phone"></div>
       <div class="field"><label>کد ملی راننده</label><input id="qd_nid"></div>
       <div class="field"><label>نوع ماشین</label><input id="qd_vehicle"></div>
       <div class="field"><label>شماره پلاک *</label><input id="qd_plate"></div>
@@ -521,8 +681,9 @@ function quickAddDriverFromOrder(){
 function quickSaveDriver(){
   const driver = document.getElementById('qd_driver').value.trim();
   const plate = document.getElementById('qd_plate').value.trim();
+  const phone = document.getElementById('qd_phone').value.trim();
   if(!driver || !plate){ toast('نام راننده و پلاک الزامی است'); return; }
-  const obj = {id:uid(), driver, nationalId:document.getElementById('qd_nid').value.trim(), vehicle:document.getElementById('qd_vehicle').value.trim(), plate, smartCard:document.getElementById('qd_smart').value.trim(), capacity:0, status:'آماده حرکت'};
+  const obj = {id:uid(), driver, phone, nationalId:document.getElementById('qd_nid').value.trim(), vehicle:document.getElementById('qd_vehicle').value.trim(), plate, smartCard:document.getElementById('qd_smart').value.trim(), capacity:0, status:'آماده حرکت'};
   state.fleet.push(obj);
   saveState(true);
   selectDriverOption(obj.id);
@@ -636,7 +797,7 @@ function saveOrder(){
   const driverId = document.getElementById('o_driver').value;
   const destination = document.getElementById('o_destination').value.trim();
   const balanceImpact = paymentStatus==='تسویه کامل' ? 0 : t.total;
-  const obj = editingOrderId ? state.orders.find(x=>x.id===editingOrderId) : {id:uid()};
+  const obj = editingOrderId ? state.orders.find(x=>x.id===editingOrderId) : {id:uid(), createdAt:Date.now()};
   Object.assign(obj, {
     number, customerId, customer:customer?customer.name:'', items:validItems,
     amount:t.total, discount:t.discount, shipping:t.shipping,
@@ -697,6 +858,7 @@ function printInvoice(id){
       <div class="box-title">مشخصات حمل</div>
       <div class="grid2">
         <div><b>راننده:</b> ${drv?drv.driver:'—'}</div>
+        <div><b>تلفن راننده:</b> ${drv?(drv.phone||'—'):'—'}</div>
         <div><b>کد ملی راننده:</b> ${drv?(drv.nationalId||'—'):'—'}</div>
         <div><b>نوع/پلاک خودرو:</b> ${drv?((drv.vehicle||'—')+' / '+drv.plate):'—'}</div>
         <div><b>شماره هوشمند خودرو:</b> ${drv?(drv.smartCard||'—'):'—'}</div>
@@ -724,7 +886,7 @@ function printInvoice(id){
     .foot{margin-top:40px; font-size:11.5px; opacity:.6; text-align:center;}
     @media print{ .noprint{display:none;} }
   </style></head><body>
-    <div class="head"><h1>فاکتور فروش <span class="tag">سفال‌یار</span></h1><div>شماره: <b>${o.number}</b><br>تاریخ: ${o.date}</div></div>
+    <div class="head"><h1>فاکتور فروش <span class="tag">سفال‌یار</span></h1><div>شماره: <b>${o.number}</b><br>تاریخ: ${displayDate(o.date)}</div></div>
     <div class="meta"><div><b>خریدار:</b> ${cust?cust.name:o.customer}<br>${cust?cust.phone:''} — ${cust?cust.city:''}</div>
       <div><b>وضعیت سفارش:</b> ${o.status}<br><b>وضعیت پرداخت:</b> ${o.paymentStatus}</div></div>
     <table><thead><tr><th>شرح کالا</th><th>تعداد</th><th>قیمت واحد (تومان)</th><th>جمع (تومان)</th></tr></thead><tbody>${rows}</tbody></table>
@@ -736,7 +898,7 @@ function printInvoice(id){
     </div>
     ${transportBlock}
     ${notesBlock}
-    <div class="foot">طراحی و توسعه امیر حسین ناظم       </div>
+    <div class="foot">این فاکتور توسط سامانه مدیریت کارخانه سفال‌یار صادر شده است.</div>
     <div class="noprint" style="text-align:center;margin-top:24px;"><button onclick="window.print()" style="padding:10px 22px;border:none;background:#B5502F;color:#fff;border-radius:8px;font-family:inherit;cursor:pointer;">چاپ فاکتور</button></div>
   </body></html>`);
   win.document.close();
@@ -749,7 +911,7 @@ function openWarehouseModal(id=null){
   const html = `
     <h3>${id?'ویرایش تردد':'ثبت تردد کالا'}</h3>
     <div class="grid g2">
-      <div class="field"><label>تاریخ *</label><input id="w_date" value="${item.date||todayStr()}"></div>
+      <div class="field"><label>تاریخ (شمسی) *</label><div style="display:flex; gap:6px;"><input id="w_date" value="${item.date||jalaliToday()}" placeholder="مثلاً ۱۴۰۵/۰۴/۲۱" style="flex:1;"><button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('w_date').value=jalaliToday()">امروز</button></div></div>
       <div class="field"><label>نوع تردد</label><select id="w_type">
         ${['ورود کالا','خروج کالا','انتقال بین انبار'].map(o=>`<option ${item.type===o?'selected':''}>${o}</option>`).join('')}
       </select></div>
@@ -809,7 +971,7 @@ function openFinanceModal(id=null){
   const html = `
     <h3>${id?'ویرایش تراکنش':'ثبت تراکنش مالی'}</h3>
     <div class="grid g2">
-      <div class="field"><label>تاریخ *</label><input id="fi_date" value="${item.date||todayStr()}"></div>
+      <div class="field"><label>تاریخ (شمسی) *</label><div style="display:flex; gap:6px;"><input id="fi_date" value="${item.date||jalaliToday()}" placeholder="مثلاً ۱۴۰۵/۰۴/۲۱" style="flex:1;"><button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('fi_date').value=jalaliToday()">امروز</button></div></div>
       <div class="field"><label>نوع تراکنش</label><select id="fi_type">
         ${['دریافت وجه','پرداخت وجه'].map(o=>`<option ${item.type===o?'selected':''}>${o}</option>`).join('')}
       </select></div>
@@ -875,6 +1037,7 @@ function openFleetModal(id=null, onSaved=null){
     <h3>${id?'ویرایش ناوگان':'ثبت ماشین / راننده'}</h3>
     <div class="grid g2">
       <div class="field"><label>نام راننده *</label><input id="fl_driver" value="${item.driver||''}"></div>
+      <div class="field"><label>شماره تلفن راننده *</label><input id="fl_phone" value="${item.phone||''}"></div>
       <div class="field"><label>کد ملی راننده</label><input id="fl_nid" value="${item.nationalId||''}"></div>
       <div class="field"><label>نوع ماشین *</label><input id="fl_vehicle" value="${item.vehicle||''}"></div>
       <div class="field"><label>شماره پلاک *</label><input id="fl_plate" value="${item.plate||''}"></div>
@@ -897,10 +1060,11 @@ function openFleetModal(id=null, onSaved=null){
 function saveFleet(id, hasCallback){
   const driver = document.getElementById('fl_driver').value.trim();
   const plate = document.getElementById('fl_plate').value.trim();
+  const phone = document.getElementById('fl_phone').value.trim();
   if(!driver || !plate){ toast('نام راننده و پلاک الزامی است'); return; }
   const obj = id ? state.fleet.find(x=>x.id===id) : {id:uid()};
   Object.assign(obj, {
-    driver, nationalId:document.getElementById('fl_nid').value.trim(),
+    driver, phone, nationalId:document.getElementById('fl_nid').value.trim(),
     vehicle:document.getElementById('fl_vehicle').value, plate,
     smartCard:document.getElementById('fl_smart').value.trim(),
     capacity:Number(document.getElementById('fl_capacity').value||0),
@@ -934,15 +1098,15 @@ function deleteRow(type, id){
 function openCustomerProfile(id){
   const c = state.customers.find(x=>x.id===id);
   if(!c) return;
-  const orders = state.orders.filter(o=>o.customerId===id).sort((a,b)=>b.date.localeCompare(a.date));
+  const orders = state.orders.filter(o=>o.customerId===id).sort((a,b)=>parseJalaliNum(b.date)-parseJalaliNum(a.date));
   const payments = state.finance.filter(f=>f.party===c.name).sort((a,b)=>b.date.localeCompare(a.date));
   const totalPurchase = orders.reduce((s,o)=>s+Number(o.amount||0),0);
-  const lastPurchase = orders[0]?.date || '—';
+  const lastPurchase = orders[0]?.date ? displayDate(orders[0].date) : '—';
   const ordersHtml = orders.length ? orders.map(o=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:12.5px;">
-      <span class="mono">${o.number}</span><span>${o.date}</span><span class="mono">${fmt(o.amount)} تومان</span>${statusBadge(o.status)}
+      <span class="mono">${o.number}</span><span>${displayDate(o.date)}</span><span class="mono">${fmt(o.amount)} تومان</span>${statusBadge(o.status)}
     </div>`).join('') : '<div class="empty">سفارشی ثبت نشده</div>';
   const paymentsHtml = payments.length ? payments.map(f=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:12.5px;">
-      <span>${f.date}</span>${statusBadge(f.type)}<span class="mono">${fmt(f.amount)} تومان</span><span>${f.method}</span>
+      <span>${displayDate(f.date)}</span>${statusBadge(f.type)}<span class="mono">${fmt(f.amount)} تومان</span><span>${f.method}</span>
     </div>`).join('') : '<div class="empty">تراکنشی ثبت نشده</div>';
   const html = `
     <h3>پروفایل مشتری: ${c.name}</h3>
@@ -980,20 +1144,61 @@ function renderTable(type, filter=''){
     const low = Number(p.stock) < Number(p.minStock);
     return `<tr style="${low?'background:rgba(178,59,52,.06);':''}"><td><b>${p.name}</b>${low?' <span class="badge red">کمبود موجودی</span>':''}</td><td class="mono">${p.code}</td><td>${p.category}</td><td class="mono">${fmt(p.sellPrice)}</td><td class="mono">${fmt(p.stock)}</td><td class="mono">${fmt(p.minStock)}</td><td><button class="icon-btn" onclick="openProductModal('${p.id}')">✎</button></td></tr>`;
   }).join('');
-  if(type==='orders') html = rows.map(o=>{
-    const drv = o.driverId ? state.fleet.find(f=>f.id===o.driverId) : null;
-    return `<tr><td class="mono">${o.number}</td><td>${o.customer}</td><td class="mono">${fmt(o.amount)}</td><td>${statusBadge(o.status)}</td><td>${statusBadge(o.paymentStatus)}</td><td>${drv?drv.driver:'—'}</td><td class="mono">${o.date}</td><td><button class="icon-btn" title="چاپ فاکتور" onclick="printInvoice('${o.id}')">🖨</button><button class="icon-btn" title="ویرایش" onclick="openOrderModal('${o.id}')">✎</button></td></tr>`;
-  }).join('');
-  if(type==='warehouse') html = rows.map(w=>`<tr><td class="mono">${w.date}</td><td>${statusBadge(w.type)}</td><td>${w.product}</td><td class="mono">${fmt(w.qty)}</td><td>${w.notes||''}</td><td><button class="icon-btn" onclick="openWarehouseModal('${w.id}')">✎</button></td></tr>`).join('');
-  if(type==='finance') html = rows.map(f=>`<tr><td class="mono">${f.date}</td><td>${statusBadge(f.type)}</td><td>${f.party}</td><td class="mono">${fmt(f.amount)}</td><td>${f.method}</td><td>${f.notes||''}</td><td><button class="icon-btn" onclick="openFinanceModal('${f.id}')">✎</button></td></tr>`).join('');
-  if(type==='fleet') html = rows.map(v=>`<tr><td>${v.driver}</td><td class="mono">${v.nationalId||'—'}</td><td>${v.vehicle}</td><td class="mono">${v.plate}</td><td class="mono">${v.smartCard||'—'}</td><td class="mono">${fmt(v.capacity)}</td><td>${statusBadge(v.status)}</td><td><button class="icon-btn" onclick="openFleetModal('${v.id}')">✎</button></td></tr>`).join('');
+  if(type==='orders'){ renderOrdersTable(); return; }
+  if(type==='warehouse') html = rows.map(w=>`<tr><td class="mono">${displayDate(w.date)}</td><td>${statusBadge(w.type)}</td><td>${w.product}</td><td class="mono">${fmt(w.qty)}</td><td>${w.notes||''}</td><td><button class="icon-btn" onclick="openWarehouseModal('${w.id}')">✎</button></td></tr>`).join('');
+  if(type==='finance') html = rows.map(f=>`<tr><td class="mono">${displayDate(f.date)}</td><td>${statusBadge(f.type)}</td><td>${f.party}</td><td class="mono">${fmt(f.amount)}</td><td>${f.method}</td><td>${f.notes||''}</td><td><button class="icon-btn" onclick="openFinanceModal('${f.id}')">✎</button></td></tr>`).join('');
+  if(type==='fleet') html = rows.map(v=>`<tr><td>${v.driver}</td><td class="mono">${v.phone||'—'}</td><td class="mono">${v.nationalId||'—'}</td><td>${v.vehicle}</td><td class="mono">${v.plate}</td><td class="mono">${v.smartCard||'—'}</td><td class="mono">${fmt(v.capacity)}</td><td>${statusBadge(v.status)}</td><td><button class="icon-btn" onclick="openFleetModal('${v.id}')">✎</button></td></tr>`).join('');
   if(type==='users') html = rows.map(u=>`<tr><td><b>${u.name}</b></td><td>${u.role}</td><td class="mono">${u.phone||'—'}</td><td><button class="icon-btn" onclick="openUserModal('${u.id}')">✎</button></td></tr>`).join('');
   tbody.innerHTML = html;
 }
 
+/* Orders get their own renderer: always sorted newest-first, with dedicated date/customer/month filters. */
+function populateOrdersCustomerFilter(){
+  const sel = document.getElementById('ordersCustomerFilter');
+  if(!sel) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="">همه مشتریان</option>' + state.customers.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  sel.value = current;
+}
+function clearOrderFilters(){
+  const s = document.getElementById('ordersSearch'); if(s) s.value='';
+  const c = document.getElementById('ordersCustomerFilter'); if(c) c.value='';
+  const m = document.getElementById('ordersMonthFilter'); if(m) m.value='';
+  const y = document.getElementById('ordersYearFilter'); if(y) y.value='';
+  renderOrdersTable();
+}
+function renderOrdersTable(){
+  const tbody = document.getElementById('tbody-orders');
+  if(!tbody) return;
+  populateOrdersCustomerFilter();
+  const searchVal = (document.getElementById('ordersSearch')?.value || '').toLowerCase();
+  const custVal = document.getElementById('ordersCustomerFilter')?.value || '';
+  const monthVal = document.getElementById('ordersMonthFilter')?.value || '';
+  const yearVal = (document.getElementById('ordersYearFilter')?.value || '').trim();
+
+  let rows = [...state.orders];
+  if(searchVal) rows = rows.filter(o => (JSON.stringify(o)+' '+jalaliSearchBlob(o.date)).toLowerCase().includes(searchVal));
+  if(custVal) rows = rows.filter(o => o.customerId === custVal);
+  if(monthVal) rows = rows.filter(o => { const p=parseJalaliParts(o.date); return p && String(p.jm).padStart(2,'0')===monthVal; });
+  if(yearVal) rows = rows.filter(o => { const p=parseJalaliParts(o.date); return p && String(p.jy)===yearVal; });
+
+  // newest first: by parsed Jalali date, then by creation time as a tie-breaker
+  rows.sort((a,b) => {
+    const da = parseJalaliNum(a.date), db = parseJalaliNum(b.date);
+    if(db !== da) return db - da;
+    return (b.createdAt||0) - (a.createdAt||0);
+  });
+
+  if(rows.length===0){ tbody.innerHTML = `<tr><td colspan="8" class="empty">سفارشی مطابق فیلترهای فعلی یافت نشد</td></tr>`; return; }
+  tbody.innerHTML = rows.map(o=>{
+    const drv = o.driverId ? state.fleet.find(f=>f.id===o.driverId) : null;
+    return `<tr><td class="mono">${o.number}</td><td>${o.customer}</td><td class="mono">${fmt(o.amount)}</td><td>${statusBadge(o.status)}</td><td>${statusBadge(o.paymentStatus)}</td><td>${drv?drv.driver:'—'}</td><td class="mono">${displayDate(o.date)}</td><td><button class="icon-btn" title="چاپ فاکتور" onclick="printInvoice('${o.id}')">🖨</button><button class="icon-btn" title="ویرایش" onclick="openOrderModal('${o.id}')">✎</button></td></tr>`;
+  }).join('');
+}
+
 /* ================= DASHBOARD ================= */
 function renderDashboard(){
-  const orders = state.orders; const today = todayStr();
+  const orders = state.orders; const today = jalaliToday();
   const salesToday = orders.filter(o=>o.date===today).reduce((s,o)=>s+Number(o.amount||0),0);
   const salesTotal = orders.reduce((s,o)=>s+Number(o.amount||0),0);
   const pending = orders.filter(o=>o.status!=='تحویل شده').length;
@@ -1021,7 +1226,7 @@ function renderSalesChart(){
   const days = [];
   for(let i=13;i>=0;i--){
     const d = new Date(); d.setDate(d.getDate()-i);
-    const key = d.toISOString().slice(0,10);
+    const key = gregorianToJalaliStr(d.getFullYear(), d.getMonth()+1, d.getDate());
     const sum = state.orders.filter(o=>o.date===key).reduce((s,o)=>s+Number(o.amount||0),0);
     days.push({label:key.slice(5), value:sum});
   }
@@ -1096,7 +1301,7 @@ function applyRoleFilter(role){
     if(firstVisible) firstVisible.click();
   }
 }
-function renderAll(){ renderDashboard(); ['customers','products','orders','warehouse','finance','fleet','users'].forEach(t=>renderTable(t)); }
+function renderAll(){ renderDashboard(); ['customers','products','warehouse','finance','fleet','users'].forEach(t=>renderTable(t)); renderOrdersTable(); }
 
 /* ================= BACKUP ================= */
 const supportsFS = 'showDirectoryPicker' in window;
