@@ -48,6 +48,17 @@ body{font-family:'Vazirmatn',sans-serif;
 .btn-sm{padding:5px 10px; font-size:12px; border-radius:8px;}
 .icon-btn{background:none;border:none;cursor:pointer;font-size:15px;color:var(--ink);opacity:.6;padding:4px;} .icon-btn:hover{opacity:1;}
 .toolbar{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+.toolbar select, .toolbar input:not([type=checkbox]):not([type=radio]){
+  padding:9px 12px; border-radius:10px; border:1px solid var(--line);
+  background:var(--paper); font-family:inherit; font-size:13px; color:var(--ink);
+}
+.toolbar select{cursor:pointer;}
+.filter-panel{background:var(--sand-2); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; margin-bottom:16px;}
+.filter-panel-title{font-size:12px; font-weight:700; opacity:.6; margin-bottom:10px; letter-spacing:.3px;}
+.filter-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:10px;}
+.filter-grid .field label{display:block; font-size:11px; margin-bottom:5px; opacity:.65; font-weight:600;}
+.filter-grid .field input, .filter-grid .field select{width:100%; background:var(--paper); padding:9px 11px; border-radius:9px; border:1px solid var(--line); font-family:inherit; font-size:13px; color:var(--ink);}
+@media(max-width:1100px){.filter-grid{grid-template-columns:repeat(3,1fr);}}
 .grid{display:grid; gap:16px;} .g4{grid-template-columns:repeat(4,1fr);} .g3{grid-template-columns:repeat(3,1fr);} .g2{grid-template-columns:repeat(2,1fr);} .g5{grid-template-columns:repeat(5,1fr);}
 @media(max-width:1200px){.g5{grid-template-columns:repeat(3,1fr);}}
 @media(max-width:1000px){.g4{grid-template-columns:repeat(2,1fr);} .g3{grid-template-columns:repeat(2,1fr);} .g5{grid-template-columns:repeat(2,1fr);}}
@@ -159,7 +170,7 @@ tbody tr{border-top:1px solid var(--line);} tbody tr:hover{background:var(--sand
   .modal-actions .btn{flex:1 1 auto; justify-content:center;}
   .modal-actions .btn[style*="margin-right:auto"]{flex:1 1 100%; order:10;}
   #ordersYearFilter{width:100% !important;}
-  .toolbar select, .toolbar input{max-width:100%;}
+  .filter-grid{grid-template-columns:repeat(2,1fr);}
 }
 
 /* Very narrow phones */
@@ -173,7 +184,7 @@ tbody tr{border-top:1px solid var(--line);} tbody tr:hover{background:var(--sand
 <body data-theme="light">
 
 <aside class="sidebar">
-  <div class="brand"><div class="mark">آ</div><div><b>سفال‌یار</b><span>ERP کارخانه آجر و سفال</span></div></div>
+  <div class="brand"><div class="mark">Nz</div><div><b>سفال‌یار</b><span>  طراحی و توسعه امیرحسین ناظم</span></div></div>
   <div class="nav-item active" data-view="dashboard" data-roles="all"><span class="nav-icon">▦</span> داشبورد مدیریتی</div>
   <div class="nav-sec">فروش و مشتریان</div>
   <div class="nav-item" data-view="customers" data-roles="مدیر کل,مدیر فروش,کارشناس فروش,پشتیبانی"><span class="nav-icon">◔</span> مشتریان</div>
@@ -236,20 +247,42 @@ tbody tr{border-top:1px solid var(--line);} tbody tr:hover{background:var(--sand
       <div class="search-box"><input id="ordersSearch" placeholder="جستجوی شماره/توضیحات..." oninput="renderOrdersTable()"></div>
       <button class="btn btn-primary" onclick="openOrderModal()">+ سفارش جدید</button>
     </div>
-    <div class="section-head" style="margin-top:-8px;">
-      <div class="toolbar">
-        <select id="ordersCustomerFilter" onchange="renderOrdersTable()" style="min-width:160px;">
-          <option value="">همه مشتریان</option>
-        </select>
-        <select id="ordersMonthFilter" onchange="renderOrdersTable()">
-          <option value="">همه ماه‌ها</option>
-          <option value="01">فروردین</option><option value="02">اردیبهشت</option><option value="03">خرداد</option>
-          <option value="04">تیر</option><option value="05">مرداد</option><option value="06">شهریور</option>
-          <option value="07">مهر</option><option value="08">آبان</option><option value="09">آذر</option>
-          <option value="10">دی</option><option value="11">بهمن</option><option value="12">اسفند</option>
-        </select>
-        <input id="ordersYearFilter" placeholder="سال شمسی (مثلاً ۱۴۰۵)" style="width:150px; padding:9px 12px; border-radius:10px; border:1px solid var(--line); background:var(--paper); font-family:inherit; font-size:13px;" oninput="renderOrdersTable()">
-        <button class="btn btn-ghost btn-sm" onclick="clearOrderFilters()">پاک کردن فیلترها</button>
+    <div class="filter-panel">
+      <div class="filter-panel-title">فیلتر سفارشات</div>
+      <div class="filter-grid">
+        <div class="field" style="margin-bottom:0;">
+          <label>مشتری</label>
+          <div class="searchable-select">
+            <input type="text" id="ordersCustomerFilterInput" placeholder="جستجوی مشتری..." autocomplete="off"
+              oninput="filterOrdersCustomerOptions(this.value)" onfocus="filterOrdersCustomerOptions(this.value)">
+            <div class="select-dropdown" id="ordersCustomerFilterDropdown"></div>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>محصول / دسته‌بندی</label>
+          <input type="text" id="ordersProductFilter" placeholder="مثلاً آجر نسوز..." oninput="renderOrdersTable()">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>تاریخ دقیق (شمسی)</label>
+          <input type="text" id="ordersDateFilter" placeholder="مثلاً ۱۴۰۵/۰۴/۲۰" oninput="renderOrdersTable()">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>ماه</label>
+          <select id="ordersMonthFilter" onchange="renderOrdersTable()">
+            <option value="">همه ماه‌ها</option>
+            <option value="01">فروردین</option><option value="02">اردیبهشت</option><option value="03">خرداد</option>
+            <option value="04">تیر</option><option value="05">مرداد</option><option value="06">شهریور</option>
+            <option value="07">مهر</option><option value="08">آبان</option><option value="09">آذر</option>
+            <option value="10">دی</option><option value="11">بهمن</option><option value="12">اسفند</option>
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>سال شمسی</label>
+          <input id="ordersYearFilter" placeholder="مثلاً ۱۴۰۵" oninput="renderOrdersTable()">
+        </div>
+        <div class="field" style="margin-bottom:0; display:flex; align-items:end;">
+          <button class="btn btn-ghost" style="width:100%; justify-content:center;" onclick="clearOrderFilters()">پاک کردن فیلترها</button>
+        </div>
       </div>
     </div>
     <div class="table-wrap"><table><thead><tr><th>شماره</th><th>مشتری</th><th>مبلغ کل</th><th>وضعیت سفارش</th><th>وضعیت پرداخت</th><th>راننده</th><th>تاریخ</th><th></th></tr></thead><tbody id="tbody-orders"></tbody></table></div>
@@ -403,10 +436,30 @@ function gregorianToJalaliStr(y,m,d){
 }
 function jalaliToday(){ const d=new Date(); return gregorianToJalaliStr(d.getFullYear(), d.getMonth()+1, d.getDate()); }
 const JALALI_MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+function toEnglishDigits(s){
+  if(s===null || s===undefined) return '';
+  const fa='۰۱۲۳۴۵۶۷۸۹', ar='٠١٢٣٤٥٦٧٨٩';
+  return String(s).replace(/[۰-۹٠-٩]/g, ch=>{
+    let i = fa.indexOf(ch); if(i>-1) return String(i);
+    i = ar.indexOf(ch); if(i>-1) return String(i);
+    return ch;
+  });
+}
+/* Tolerant parser: accepts '/', '-', '.', or space as separators, 1-2 digit month/day,
+   Persian/Arabic digits, and transparently converts legacy Gregorian ISO dates (year >= 1500)
+   from earlier records into proper Jalali parts. Returns null only for genuinely unreadable text
+   (kept as free-form manual entry, per the user's request), never throws. */
 function parseJalaliParts(dateStr){
-  const m = /^(\d{3,4})\/(\d{1,2})\/(\d{1,2})$/.exec((dateStr||'').trim());
+  if(!dateStr) return null;
+  const norm = toEnglishDigits(dateStr).trim();
+  const m = /^(\d{3,4})[\/\-.\s](\d{1,2})[\/\-.\s](\d{1,2})$/.exec(norm);
   if(!m) return null;
-  return {jy:Number(m[1]), jm:Number(m[2]), jd:Number(m[3])};
+  let y=Number(m[1]), mo=Number(m[2]), d=Number(m[3]);
+  if(mo<1||mo>12||d<1||d>31) return null;
+  if(y>=1500){ // legacy Gregorian ISO date from before the Jalali switch — convert transparently
+    try{ const [jy,jm,jd]=toJalali(y,mo,d); y=jy; mo=jm; d=jd; } catch(e){ return null; }
+  }
+  return {jy:y, jm:mo, jd:d};
 }
 function parseJalaliNum(dateStr){
   const p = parseJalaliParts(dateStr);
@@ -415,13 +468,15 @@ function parseJalaliNum(dateStr){
 function jalaliSearchBlob(dateStr){
   const p = parseJalaliParts(dateStr);
   if(!p) return dateStr||'';
-  return `${dateStr} ${p.jd} ${JALALI_MONTHS[p.jm-1]||''} ${p.jy}`;
+  return `${dateStr} ${p.jd} ${JALALI_MONTHS[p.jm-1]||''} ${p.jy} ${pad2(p.jm)}/${pad2(p.jd)}`;
 }
-/* Best-effort: if the text looks like a Gregorian ISO date (old records), show it converted to Jalali for display; otherwise show as typed (manual entry fallback). */
+/* Always show a clean, canonical Jalali date (####/##/##) regardless of how it was typed —
+   tolerant of digit style, separators, and legacy Gregorian ISO records. Only shows raw text
+   as-is when it truly can't be parsed as any kind of date (manual free-text fallback). */
 function displayDate(raw){
   if(!raw) return '';
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw.trim());
-  if(m) return gregorianToJalaliStr(Number(m[1]), Number(m[2]), Number(m[3]));
+  const p = parseJalaliParts(raw);
+  if(p) return `${p.jy}/${pad2(p.jm)}/${pad2(p.jd)}`;
   return raw;
 }
 
@@ -898,7 +953,7 @@ function printInvoice(id){
     </div>
     ${transportBlock}
     ${notesBlock}
-    <div class="foot">این فاکتور توسط سامانه مدیریت کارخانه سفال‌یار صادر شده است.</div>
+    <div class="foot">طراحی و توسعه امیرحسین ناظم</div>
     <div class="noprint" style="text-align:center;margin-top:24px;"><button onclick="window.print()" style="padding:10px 22px;border:none;background:#B5502F;color:#fff;border-radius:8px;font-family:inherit;cursor:pointer;">چاپ فاکتور</button></div>
   </body></html>`);
   win.document.close();
@@ -1153,16 +1208,31 @@ function renderTable(type, filter=''){
 }
 
 /* Orders get their own renderer: always sorted newest-first, with dedicated date/customer/month filters. */
-function populateOrdersCustomerFilter(){
-  const sel = document.getElementById('ordersCustomerFilter');
-  if(!sel) return;
-  const current = sel.value;
-  sel.innerHTML = '<option value="">همه مشتریان</option>' + state.customers.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-  sel.value = current;
+let ordersCustomerFilterId = '';
+function filterOrdersCustomerOptions(q){
+  const dd = document.getElementById('ordersCustomerFilterDropdown');
+  if(!dd) return;
+  const query = (q||'').toLowerCase();
+  const matches = state.customers.filter(c=>(c.name+' '+c.phone).toLowerCase().includes(query));
+  const allOpt = `<div class="opt" onmousedown="selectOrdersCustomerFilter('','')">— همه مشتریان —</div>`;
+  dd.innerHTML = allOpt + (matches.length
+    ? matches.map(c=>`<div class="opt" onmousedown="selectOrdersCustomerFilter('${c.id}', '${c.name.replace(/'/g,"’")}')">${c.name} — ${c.phone}</div>`).join('')
+    : `<div class="opt muted">مشتری‌ای یافت نشد</div>`);
+  dd.classList.add('open');
+}
+function selectOrdersCustomerFilter(id, name){
+  ordersCustomerFilterId = id;
+  const input = document.getElementById('ordersCustomerFilterInput');
+  if(input) input.value = id ? name : '';
+  document.getElementById('ordersCustomerFilterDropdown')?.classList.remove('open');
+  renderOrdersTable();
 }
 function clearOrderFilters(){
   const s = document.getElementById('ordersSearch'); if(s) s.value='';
-  const c = document.getElementById('ordersCustomerFilter'); if(c) c.value='';
+  const cf = document.getElementById('ordersCustomerFilterInput'); if(cf) cf.value='';
+  ordersCustomerFilterId = '';
+  const pf = document.getElementById('ordersProductFilter'); if(pf) pf.value='';
+  const df = document.getElementById('ordersDateFilter'); if(df) df.value='';
   const m = document.getElementById('ordersMonthFilter'); if(m) m.value='';
   const y = document.getElementById('ordersYearFilter'); if(y) y.value='';
   renderOrdersTable();
@@ -1170,15 +1240,24 @@ function clearOrderFilters(){
 function renderOrdersTable(){
   const tbody = document.getElementById('tbody-orders');
   if(!tbody) return;
-  populateOrdersCustomerFilter();
   const searchVal = (document.getElementById('ordersSearch')?.value || '').toLowerCase();
-  const custVal = document.getElementById('ordersCustomerFilter')?.value || '';
+  const productVal = (document.getElementById('ordersProductFilter')?.value || '').toLowerCase().trim();
+  const dateVal = (document.getElementById('ordersDateFilter')?.value || '').trim();
   const monthVal = document.getElementById('ordersMonthFilter')?.value || '';
-  const yearVal = (document.getElementById('ordersYearFilter')?.value || '').trim();
+  const yearVal = toEnglishDigits(document.getElementById('ordersYearFilter')?.value || '').trim();
 
   let rows = [...state.orders];
   if(searchVal) rows = rows.filter(o => (JSON.stringify(o)+' '+jalaliSearchBlob(o.date)).toLowerCase().includes(searchVal));
-  if(custVal) rows = rows.filter(o => o.customerId === custVal);
+  if(ordersCustomerFilterId) rows = rows.filter(o => o.customerId === ordersCustomerFilterId);
+  if(productVal) rows = rows.filter(o => o.items.some(it=>{
+    const p = state.products.find(x=>x.id===it.productId);
+    return p && (p.name.toLowerCase().includes(productVal) || p.category.toLowerCase().includes(productVal));
+  }));
+  if(dateVal){
+    const dp = parseJalaliParts(dateVal);
+    if(dp){ const num = dp.jy*10000+dp.jm*100+dp.jd; rows = rows.filter(o=>parseJalaliNum(o.date)===num); }
+    else{ const q = toEnglishDigits(dateVal).toLowerCase(); rows = rows.filter(o => (o.date||'').toLowerCase().includes(q)); }
+  }
   if(monthVal) rows = rows.filter(o => { const p=parseJalaliParts(o.date); return p && String(p.jm).padStart(2,'0')===monthVal; });
   if(yearVal) rows = rows.filter(o => { const p=parseJalaliParts(o.date); return p && String(p.jy)===yearVal; });
 
@@ -1198,8 +1277,8 @@ function renderOrdersTable(){
 
 /* ================= DASHBOARD ================= */
 function renderDashboard(){
-  const orders = state.orders; const today = jalaliToday();
-  const salesToday = orders.filter(o=>o.date===today).reduce((s,o)=>s+Number(o.amount||0),0);
+  const orders = state.orders; const todayNum = parseJalaliNum(jalaliToday());
+  const salesToday = orders.filter(o=>parseJalaliNum(o.date)===todayNum).reduce((s,o)=>s+Number(o.amount||0),0);
   const salesTotal = orders.reduce((s,o)=>s+Number(o.amount||0),0);
   const pending = orders.filter(o=>o.status!=='تحویل شده').length;
   const debt = state.customers.reduce((s,c)=>s+Math.max(0,Number(c.balance||0)),0);
@@ -1226,9 +1305,11 @@ function renderSalesChart(){
   const days = [];
   for(let i=13;i>=0;i--){
     const d = new Date(); d.setDate(d.getDate()-i);
-    const key = gregorianToJalaliStr(d.getFullYear(), d.getMonth()+1, d.getDate());
-    const sum = state.orders.filter(o=>o.date===key).reduce((s,o)=>s+Number(o.amount||0),0);
-    days.push({label:key.slice(5), value:sum});
+    const [jy,jm,jd] = toJalali(d.getFullYear(), d.getMonth()+1, d.getDate());
+    const keyNum = jy*10000 + jm*100 + jd;
+    const label = `${pad2(jm)}/${pad2(jd)}`;
+    const sum = state.orders.filter(o=>parseJalaliNum(o.date)===keyNum).reduce((s,o)=>s+Number(o.amount||0),0);
+    days.push({label, value:sum});
   }
   const max = Math.max(...days.map(d=>d.value), 1);
   const w = canvas.width, h = canvas.height;
